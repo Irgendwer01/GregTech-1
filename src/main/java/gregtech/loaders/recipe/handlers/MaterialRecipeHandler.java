@@ -3,7 +3,6 @@ package gregtech.loaders.recipe.handlers;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.builders.BlastRecipeBuilder;
-import gregtech.api.recipes.ingredients.IntCircuitIngredient;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.MarkerMaterials;
 import gregtech.api.unification.material.Material;
@@ -51,6 +50,7 @@ public class MaterialRecipeHandler {
 
     public static void processDust(OrePrefix dustPrefix, Material mat, DustProperty property) {
         ItemStack dustStack = OreDictUnifier.get(dustPrefix, mat);
+        OreProperty oreProperty = mat.hasProperty(PropertyKey.ORE) ? mat.getProperty(PropertyKey.ORE): null;
         if (mat.hasProperty(PropertyKey.GEM)) {
             ItemStack gemStack = OreDictUnifier.get(OrePrefix.gem, mat);
             ItemStack smallDarkAshStack = OreDictUnifier.get(OrePrefix.dustSmall, Materials.DarkAsh);
@@ -85,11 +85,24 @@ public class MaterialRecipeHandler {
                         .buildAndRegister();
             }
 
+            if (oreProperty != null) {
+                Material smeltingResult = oreProperty.getDirectSmeltResult();
+                if (smeltingResult != null) {
+                    ModHandler.addSmeltingRecipe(OreDictUnifier.get(dustPrefix, mat), OreDictUnifier.get(OrePrefix.ingot, smeltingResult));
+                }
+            }
+
         } else if (mat.hasProperty(PropertyKey.INGOT)) {
             if (!mat.hasAnyOfFlags(FLAMMABLE, NO_SMELTING)) {
 
                 boolean hasHotIngot = OrePrefix.ingotHot.doGenerateItem(mat);
                 ItemStack ingotStack = OreDictUnifier.get(hasHotIngot ? OrePrefix.ingotHot : OrePrefix.ingot, mat);
+                if (ingotStack.isEmpty() && oreProperty != null) {
+                    Material smeltingResult = oreProperty.getDirectSmeltResult();
+                    if (smeltingResult != null) {
+                        ingotStack = OreDictUnifier.get(OrePrefix.ingot, smeltingResult);
+                    }
+                }
                 int blastTemp = mat.getBlastTemperature();
 
                 if (blastTemp <= 0) {
@@ -116,6 +129,17 @@ public class MaterialRecipeHandler {
                         .outputs(OreDictUnifier.get(OrePrefix.plate, mat))
                         .buildAndRegister();
             }
+
+            // Some Ores with Direct Smelting Results have neither ingot nor gem properties
+            if (oreProperty != null) {
+                Material smeltingResult = oreProperty.getDirectSmeltResult();
+                if (smeltingResult != null) {
+                    ItemStack ingotStack = OreDictUnifier.get(OrePrefix.ingot, smeltingResult);
+                    if (!ingotStack.isEmpty()) {
+                        ModHandler.addSmeltingRecipe(OreDictUnifier.get(dustPrefix, mat), ingotStack);
+                    }
+                }
+            }
         }
     }
 
@@ -139,19 +163,19 @@ public class MaterialRecipeHandler {
             FluidStack gas = CraftingComponent.EBF_GASES.get(gasTier).copy();
 
             blastBuilder.copy()
-                    .notConsumable(new IntCircuitIngredient(1))
+                    .circuitMeta(1)
                     .duration(duration)
                     .buildAndRegister();
 
             blastBuilder.copy()
-                    .notConsumable(new IntCircuitIngredient(2))
+                    .circuitMeta(2)
                     .fluidInputs(gas)
                     .duration((int) (duration * 0.67))
                     .buildAndRegister();
         } else {
             blastBuilder.duration(duration);
             if (material == Materials.Silicon) {
-                blastBuilder.notConsumable(new IntCircuitIngredient(1));
+                blastBuilder.circuitMeta(1);
             }
             blastBuilder.buildAndRegister();
         }
@@ -186,12 +210,12 @@ public class MaterialRecipeHandler {
                 dustStack, "XX", "XX", 'X', new UnificationEntry(orePrefix, material));
 
         RecipeMaps.PACKER_RECIPES.recipeBuilder().input(orePrefix, material, 4)
-                .notConsumable(new IntCircuitIngredient(1))
+                .circuitMeta(1)
                 .outputs(dustStack)
                 .buildAndRegister();
 
         RecipeMaps.PACKER_RECIPES.recipeBuilder().input(OrePrefix.dust, material)
-                .notConsumable(new IntCircuitIngredient(2))
+                .circuitMeta(2)
                 .outputs(GTUtility.copyAmount(4, smallDustStack))
                 .buildAndRegister();
     }
@@ -206,12 +230,12 @@ public class MaterialRecipeHandler {
                 dustStack, "XXX", "XXX", "XXX", 'X', new UnificationEntry(orePrefix, material));
 
         RecipeMaps.PACKER_RECIPES.recipeBuilder().input(orePrefix, material, 9)
-                .notConsumable(new IntCircuitIngredient(1))
+                .circuitMeta(1)
                 .outputs(dustStack)
                 .buildAndRegister();
 
         RecipeMaps.PACKER_RECIPES.recipeBuilder().input(OrePrefix.dust, material)
-                .notConsumable(new IntCircuitIngredient(1))
+                .circuitMeta(1)
                 .outputs(GTUtility.copyAmount(9, tinyDustStack))
                 .buildAndRegister();
     }

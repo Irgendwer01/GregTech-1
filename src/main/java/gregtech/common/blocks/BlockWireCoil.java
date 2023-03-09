@@ -7,12 +7,14 @@ import gregtech.api.items.toolitem.ToolClasses;
 import gregtech.api.unification.material.Material;
 import gregtech.api.unification.material.Materials;
 import gregtech.client.utils.TooltipHelper;
+import gregtech.common.ConfigHolder;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLiving.SpawnPlacementType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -34,6 +36,11 @@ public class BlockWireCoil extends VariantActiveBlock<BlockWireCoil.CoilType> {
         setSoundType(SoundType.METAL);
         setHarvestLevel(ToolClasses.WRENCH, 2);
         setDefaultState(getState(CoilType.CUPRONICKEL));
+    }
+
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.SOLID;
     }
 
     @Override
@@ -65,6 +72,11 @@ public class BlockWireCoil extends VariantActiveBlock<BlockWireCoil.CoilType> {
     @Override
     public boolean canCreatureSpawn(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull SpawnPlacementType type) {
         return false;
+    }
+
+    @Override
+    protected boolean isBloomEnabled(CoilType value) {
+        return ConfigHolder.client.coilsActiveEmissiveTextures;
     }
 
     public enum CoilType implements IStringSerializable, IHeatingCoilBlockStats {

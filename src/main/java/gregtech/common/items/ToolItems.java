@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
@@ -190,7 +191,7 @@ public final class ToolItems {
                 .toolClasses(ToolClasses.KNIFE, ToolClasses.SWORD));
         BUTCHERY_KNIFE = register(ItemGTSword.Builder.of(GTValues.MODID, "butchery_knife")
                 .toolStats(b -> b.crafting().attacking()
-                        .attackDamage(1.5F).attackSpeed(-1.3F))
+                        .attackDamage(1.5F).attackSpeed(-1.3F).defaultEnchantment(Enchantments.LOOTING, 3))
                 .oreDict(ToolOreDict.toolButcheryKnife)
                 .secondaryOreDicts("craftingToolButcheryKnife")
                 .toolClasses(ToolClasses.BUTCHERY_KNIFE));
@@ -263,7 +264,7 @@ public final class ToolItems {
                         .brokenStack(ToolHelper.SUPPLY_POWER_UNIT_LV))
                 .sound(GTSoundEvents.WRENCH_TOOL, true)
                 .oreDict(ToolOreDict.toolWrench)
-                .oreDict("craftingToolWrench")
+                .secondaryOreDicts("craftingToolWrench")
                 .toolClasses(ToolClasses.WRENCH)
                 .electric(GTValues.LV));
         WRENCH_HV = register(ItemGTTool.Builder.of(GTValues.MODID, "wrench_hv")
@@ -274,7 +275,7 @@ public final class ToolItems {
                         .brokenStack(ToolHelper.SUPPLY_POWER_UNIT_HV))
                 .sound(GTSoundEvents.WRENCH_TOOL, true)
                 .oreDict(ToolOreDict.toolWrench)
-                .oreDict("craftingToolWrench")
+                .secondaryOreDicts("craftingToolWrench")
                 .toolClasses(ToolClasses.WRENCH)
                 .electric(GTValues.HV));
         WRENCH_IV = register(ItemGTTool.Builder.of(GTValues.MODID, "wrench_iv")
@@ -285,7 +286,7 @@ public final class ToolItems {
                         .brokenStack(ToolHelper.SUPPLY_POWER_UNIT_IV))
                 .sound(GTSoundEvents.WRENCH_TOOL, true)
                 .oreDict(ToolOreDict.toolWrench)
-                .oreDict("craftingToolWrench")
+                .secondaryOreDicts("craftingToolWrench")
                 .toolClasses(ToolClasses.WRENCH)
                 .electric(GTValues.IV));
         BUZZSAW = register(ItemGTTool.Builder.of(GTValues.MODID, "buzzsaw")

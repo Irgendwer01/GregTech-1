@@ -49,7 +49,6 @@ import gregtech.core.network.internal.NetworkHandler;
 import gregtech.core.network.packets.*;
 import gregtech.core.sound.GTSoundEvents;
 import gregtech.core.sound.internal.SoundManager;
-import gregtech.integration.GroovyScriptCompat;
 import gregtech.integration.theoneprobe.TheOneProbeCompatibility;
 import gregtech.loaders.dungeon.DungeonLootLoader;
 import gregtech.modules.GregTechModules;
@@ -100,9 +99,6 @@ public class CoreModule implements IGregTechModule {
         GregTechAPI.soundManager = SoundManager.getInstance();
         GTSoundEvents.register();
 
-        /* init GroovyScript compat */
-        GroovyScriptCompat.init();
-
         /* Start UI Factory Registration */
         UI_FACTORY_REGISTRY.unfreeze();
         logger.info("Registering GTCEu UI Factories");
@@ -131,7 +127,6 @@ public class CoreModule implements IGregTechModule {
         if (Loader.isModLoaded(GTValues.MODID_CT)) {
             logger.info("Running early CraftTweaker initialization scripts...");
             runEarlyCraftTweakerScripts();
-            MinecraftForge.EVENT_BUS.register(this);
         }
 
         // Fire Post-Material event, intended for when Materials need to be iterated over in-full before freezing
