@@ -19,7 +19,6 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 
 import java.math.BigInteger;
-import java.util.Comparator;
 import java.util.List;
 
 import static gregtech.api.util.RelativeDirection.*;
@@ -33,7 +32,7 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
     // NBT Keys
     private static final String NBT_ENERGY_BANK = "EnergyBank";
 
-    private PowerStationEnergyStorage energyBank;
+    private PowerStationEnergyBank energyBank;
 
     public MetaTileEntityPowerSubstation(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId);
@@ -102,11 +101,11 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
     public void readFromNBT(NBTTagCompound data) {
         super.readFromNBT(data);
         if (data.hasKey(NBT_ENERGY_BANK)) {
-            energyBank = new PowerStationEnergyStorage(data.getCompoundTag(NBT_ENERGY_BANK));
+            energyBank = new PowerStationEnergyBank(data.getCompoundTag(NBT_ENERGY_BANK));
         }
     }
 
-    public static class PowerStationEnergyStorage {
+    public static class PowerStationEnergyBank {
 
         private static final String NBT_SIZE = "Size";
         private static final String NBT_STORED = "Stored";
@@ -117,7 +116,7 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
         private int index;
 
         // list is expected to be sorted
-        public PowerStationEnergyStorage(List<IBatteryBlockPart> batteries) {
+        public PowerStationEnergyBank(List<IBatteryBlockPart> batteries) {
             storage = new long[batteries.size()];
             maximums = new long[batteries.size()];
             for (int i = 0; i < batteries.size(); i++) {
@@ -125,7 +124,7 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
             }
         }
 
-        public PowerStationEnergyStorage(NBTTagCompound storageTag) {
+        public PowerStationEnergyBank(NBTTagCompound storageTag) {
             int size = storageTag.getInteger(NBT_SIZE);
             storage = new long[size];
             maximums = new long[size];
@@ -156,12 +155,11 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
          * Will use existing stored power and try to map it onto new batteries.
          * If there was more power before the rebuild operation, it will be lost.
          */
-        public PowerStationEnergyStorage rebuild(@Nonnull List<IBatteryBlockPart> batteries) {
+        public PowerStationEnergyBank rebuild(@Nonnull List<IBatteryBlockPart> batteries) {
             if (batteries.size() == 0) {
                 throw new IllegalArgumentException("Cannot rebuild Power Substation power bank with no batteries!");
             }
-            batteries.sort(Comparator.comparingLong(IBatteryBlockPart::getCapacity));
-            PowerStationEnergyStorage newStorage = new PowerStationEnergyStorage(batteries);
+            PowerStationEnergyBank newStorage = new PowerStationEnergyBank(batteries);
             for (long stored : storage) {
                 newStorage.fill(stored);
             }

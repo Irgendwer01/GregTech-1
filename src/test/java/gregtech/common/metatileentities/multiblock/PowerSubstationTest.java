@@ -1,9 +1,8 @@
 package gregtech.common.metatileentities.multiblock;
 
-import com.google.common.collect.ImmutableList;
 import gregtech.Bootstrap;
 import gregtech.api.metatileentity.multiblock.IBatteryBlockPart;
-import gregtech.common.metatileentities.multi.electric.MetaTileEntityPowerSubstation.PowerStationEnergyStorage;
+import gregtech.common.metatileentities.multi.electric.MetaTileEntityPowerSubstation.PowerStationEnergyBank;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -25,7 +24,7 @@ public class PowerSubstationTest {
 
     @Test
     public void Test_1_Slot() {
-        PowerStationEnergyStorage storage = createStorage(100);
+        PowerStationEnergyBank storage = createStorage(100);
         MatcherAssert.assertThat(storage.getCapacity(), isBigInt(100));
 
         // Random fill and drain tests
@@ -43,7 +42,7 @@ public class PowerSubstationTest {
         MatcherAssert.assertThat(storage.drain(100), is(0L));
         MatcherAssert.assertThat(storage.getStored(), isBigInt(0));
 
-        // Full fill and drain
+        // Fully fill and drain
         MatcherAssert.assertThat(storage.fill(100), is(100L));
         MatcherAssert.assertThat(storage.getStored(), isBigInt(100));
         MatcherAssert.assertThat(storage.fill(100), is(0L));
@@ -64,7 +63,7 @@ public class PowerSubstationTest {
 
     @Test
     public void Test_4_Slot_Equal_Sizes() {
-        PowerStationEnergyStorage storage = createStorage(100, 100, 100, 100);
+        PowerStationEnergyBank storage = createStorage(100, 100, 100, 100);
         MatcherAssert.assertThat(storage.getCapacity(), isBigInt(400));
 
         // No overlap of slots
@@ -109,7 +108,7 @@ public class PowerSubstationTest {
         MatcherAssert.assertThat(storage.drain(100), is(0L));
         MatcherAssert.assertThat(storage.getStored(), isBigInt(0));
 
-        // Full fill and drain
+        // Fully fill and drain
         MatcherAssert.assertThat(storage.fill(400), is(400L));
         MatcherAssert.assertThat(storage.getStored(), isBigInt(400));
         MatcherAssert.assertThat(storage.fill(400), is(0L));
@@ -130,7 +129,7 @@ public class PowerSubstationTest {
 
     @Test
     public void Test_4_Slot_Different_Sizes() {
-        PowerStationEnergyStorage storage = createStorage(100, 200, 300, 400);
+        PowerStationEnergyBank storage = createStorage(100, 200, 300, 400);
         MatcherAssert.assertThat(storage.getCapacity(), isBigInt(1000));
 
         // No overlap of slots
@@ -179,7 +178,7 @@ public class PowerSubstationTest {
         MatcherAssert.assertThat(storage.drain(100), is(0L));
         MatcherAssert.assertThat(storage.getStored(), isBigInt(0));
 
-        // Fill fill and drain
+        // Fully fill and drain
         MatcherAssert.assertThat(storage.fill(1000), is(1000L));
         MatcherAssert.assertThat(storage.getStored(), isBigInt(1000));
         MatcherAssert.assertThat(storage.fill(1000), is(0L));
@@ -201,7 +200,7 @@ public class PowerSubstationTest {
     @SuppressWarnings("NumericOverflow")
     @Test
     public void Test_Over_Long() {
-        PowerStationEnergyStorage storage = createStorage(Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE);
+        PowerStationEnergyBank storage = createStorage(Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE);
         MatcherAssert.assertThat(storage.getCapacity(), isBigInt(Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE));
 
         long halfLong = Long.MAX_VALUE / 2;
@@ -223,7 +222,7 @@ public class PowerSubstationTest {
 
     @Test
     public void Test_Rebuild_Storage() {
-        PowerStationEnergyStorage storage = createStorage(100, 500, 4000);
+        PowerStationEnergyBank storage = createStorage(100, 500, 4000);
         MatcherAssert.assertThat(storage.getCapacity(), isBigInt(4600));
 
         // Set up the storage with some amount of energy
@@ -259,15 +258,15 @@ public class PowerSubstationTest {
         return is(retVal);
     }
 
-    private static PowerStationEnergyStorage createStorage(long... storageValues) {
+    private static PowerStationEnergyBank createStorage(long... storageValues) {
         List<IBatteryBlockPart> batteries = new ArrayList<>();
         for (long value : storageValues) {
             batteries.add(new TestBattery(value));
         }
-        return new PowerStationEnergyStorage(batteries);
+        return new PowerStationEnergyBank(batteries);
     }
 
-    private static PowerStationEnergyStorage rebuildStorage(PowerStationEnergyStorage storage, long... storageValues) {
+    private static PowerStationEnergyBank rebuildStorage(PowerStationEnergyBank storage, long... storageValues) {
         List<IBatteryBlockPart> batteries = new ArrayList<>();
         for (long value : storageValues) {
             batteries.add(new TestBattery(value));
