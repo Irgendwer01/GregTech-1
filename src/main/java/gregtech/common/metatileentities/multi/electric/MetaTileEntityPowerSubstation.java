@@ -1,5 +1,6 @@
 package gregtech.common.metatileentities.multi.electric;
 
+import gregtech.api.capability.impl.EnergyContainerList;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IBatteryBlockPart;
@@ -33,6 +34,8 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
     private static final String NBT_ENERGY_BANK = "EnergyBank";
 
     private PowerStationEnergyBank energyBank;
+    private EnergyContainerList inputHatches;
+    private EnergyContainerList outputHatches;
 
     public MetaTileEntityPowerSubstation(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId);
@@ -46,12 +49,24 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
     @Override
     protected void formStructure(PatternMatchContext context) {
         super.formStructure(context);
+        this.inputHatches = new EnergyContainerList(getAbilities(MultiblockAbility.INPUT_ENERGY));
+        this.outputHatches = new EnergyContainerList(getAbilities(MultiblockAbility.OUTPUT_ENERGY));
         // todo create the storage bank from context
     }
 
     @Override
     protected void updateFormedValid() {
+        if (!getWorld().isRemote) {
+            // Bank from Energy Input Hatches
+            long energyBanked = energyBank.fill(inputHatches.getEnergyStored());
+            inputHatches.changeEnergy(-energyBanked);
 
+            // TODO passive drain from bank here
+
+            // Debank to Dynamo Hatches
+            long energyDebanked = energyBank.drain(outputHatches.getEnergyCapacity() - outputHatches.getEnergyStored());
+            outputHatches.changeEnergy(energyDebanked);
+        }
     }
 
     @Nonnull
@@ -85,7 +100,7 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
 
     @Override
     public ICubeRenderer getBaseTexture(IMultiblockPart sourcePart) {
-        return null;
+        return null; // todo
     }
 
     @Override
