@@ -18,6 +18,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import javax.annotation.Nonnull;
 
@@ -136,6 +138,18 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
     }
 
     @Override
+    protected void addDisplayText(List<ITextComponent> textList) {
+        super.addDisplayText(textList);
+        if (isStructureFormed()) {
+            if (energyBank != null) {
+                BigInteger energyStored = energyBank.getStored();
+                BigInteger energyCapacity = energyBank.getCapacity();
+                textList.add(new TextComponentTranslation("gregtech.multiblock.energy_stored", energyStored, energyCapacity));
+            }
+        }
+    }
+
+    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound data) {
         super.writeToNBT(data);
         if (energyBank != null) {
@@ -160,15 +174,16 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
 
         private final long[] storage;
         private final long[] maximums;
+        private final BigInteger capacity;
         private int index;
 
-        // list is expected to be sorted
         public PowerStationEnergyBank(List<IBatteryBlockPart> batteries) {
             storage = new long[batteries.size()];
             maximums = new long[batteries.size()];
             for (int i = 0; i < batteries.size(); i++) {
                 maximums[i] = batteries.get(i).getCapacity();
             }
+            capacity = summarize(maximums);
         }
 
         public PowerStationEnergyBank(NBTTagCompound storageTag) {
@@ -182,6 +197,7 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
                 }
                 maximums[i] = subtag.getLong(NBT_MAX);
             }
+            capacity = summarize(maximums);
         }
 
         private NBTTagCompound writeToNBT(NBTTagCompound compound) {
@@ -275,7 +291,7 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
         }
 
         public BigInteger getCapacity() {
-            return summarize(maximums);
+            return capacity;
         }
 
         public BigInteger getStored() {
