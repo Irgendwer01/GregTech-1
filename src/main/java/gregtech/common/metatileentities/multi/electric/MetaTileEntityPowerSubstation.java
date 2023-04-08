@@ -10,9 +10,11 @@ import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.PatternMatchContext;
+import gregtech.api.pattern.TraceabilityPredicate;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.common.blocks.BlockGlassCasing;
 import gregtech.common.blocks.MetaBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -20,7 +22,9 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static gregtech.api.util.RelativeDirection.*;
 
@@ -32,6 +36,9 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
 
     // NBT Keys
     private static final String NBT_ENERGY_BANK = "EnergyBank";
+
+    // Match Context Headers
+    private static final String PMC_BATTERY_HEADER = "PSSBattery_";
 
     private PowerStationEnergyBank energyBank;
     private EnergyContainerList inputHatches;
@@ -51,7 +58,21 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
         super.formStructure(context);
         this.inputHatches = new EnergyContainerList(getAbilities(MultiblockAbility.INPUT_ENERGY));
         this.outputHatches = new EnergyContainerList(getAbilities(MultiblockAbility.OUTPUT_ENERGY));
-        // todo create the storage bank from context
+
+        List<IBatteryBlockPart> parts = new ArrayList<>();
+        for (Map.Entry<String, Object> battery : context.entrySet()) {
+            if (battery.getKey().startsWith(PMC_BATTERY_HEADER)) {
+                BatteryMatchWrapper wrapper = (BatteryMatchWrapper) battery.getValue();
+                for (int i = 0; i < wrapper.amount; i++) {
+                    parts.add(wrapper.partType);
+                }
+            }
+        }
+        if (this.energyBank == null) {
+            this.energyBank = new PowerStationEnergyBank(parts);
+        } else {
+            this.energyBank = energyBank.rebuild(parts);
+        }
     }
 
     @Override
@@ -82,7 +103,7 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
                         .or(abilities(MultiblockAbility.INPUT_ENERGY).setMinGlobalLimited(1))
                         .or(abilities(MultiblockAbility.OUTPUT_ENERGY).setMinGlobalLimited(1)))
                 .where('G', states(getGlassState()))
-                .where('B', states(getBatteryStates()))
+                .where('B', batteryPredicate())
                 .build();
     }
 
@@ -94,8 +115,19 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
         return MetaBlocks.TRANSPARENT_CASING.getState(BlockGlassCasing.CasingType.LAMINATED_GLASS);
     }
 
-    protected IBlockState[] getBatteryStates() {
-        return null; // todo
+    protected TraceabilityPredicate batteryPredicate() {
+        return new TraceabilityPredicate(state -> {
+            Block block = state.getBlockState().getBlock();
+            if (!(block instanceof IBatteryBlockPart)) {
+                return false;
+            }
+            IBatteryBlockPart battery = (IBatteryBlockPart) block;
+            String key = String.format("%s%s", PMC_BATTERY_HEADER, battery.getName());
+            BatteryMatchWrapper wrapper = state.getMatchContext().get(key);
+            if (wrapper == null) wrapper = new BatteryMatchWrapper(battery);
+            state.getMatchContext().set(key, wrapper.increment());
+            return true;
+        });
     }
 
     @Override
@@ -265,6 +297,21 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
                 retVal = retVal.add(BigInteger.valueOf(currentSum));
             }
             return retVal;
+        }
+    }
+
+    private static class BatteryMatchWrapper {
+
+        private final IBatteryBlockPart partType;
+        private int amount;
+
+        public BatteryMatchWrapper(IBatteryBlockPart partType) {
+            this.partType = partType;
+        }
+
+        public BatteryMatchWrapper increment() {
+            amount++;
+            return this;
         }
     }
 }

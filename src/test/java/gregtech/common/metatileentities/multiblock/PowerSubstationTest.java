@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -291,6 +292,13 @@ public class PowerSubstationTest {
         @Override
         public int getTier() {
             return 0;
+        }
+
+        // not used in this test
+        @Nonnull
+        @Override
+        public String getName() {
+            return "";
         }
     }
 }
