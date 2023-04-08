@@ -187,7 +187,7 @@ public class MetaTileEntityPowerSubstation extends MultiblockWithDisplayBase {
             BigInteger retVal = BigInteger.ZERO;
             long currentSum = 0;
             for (long value : values) {
-                if (currentSum != 0 && value > Long.MAX_VALUE / currentSum) {
+                if (currentSum != 0 && value > Long.MAX_VALUE - currentSum) {
                     // will overflow if added
                     retVal = retVal.add(BigInteger.valueOf(currentSum));
                     currentSum = 0;
