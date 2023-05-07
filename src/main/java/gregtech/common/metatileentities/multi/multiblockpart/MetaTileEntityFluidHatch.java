@@ -88,7 +88,7 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         if (data.hasKey("ContainerInventory")) {
             MetaTileEntityQuantumTank.legacyTankItemHandlerNBTReading(this, data.getCompoundTag("ContainerInventory"), 0, 1);
         }
-        if (isExportHatch && data.hasKey("IsLocked")) {
+        if (isExportHatch) {
             this.locked = data.getBoolean("IsLocked");
             this.lockedFluid = this.locked ? FluidStack.loadFluidStackFromNBT(data.getCompoundTag("LockedFluid")) : null;
         }
@@ -322,11 +322,11 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
         if (locked && fluidTank.getFluid() != null) {
             this.lockedFluid = fluidTank.getFluid().copy();
             this.lockedFluid.amount = 1;
-            fluidTank.onContentsChangedInternal();
+            fluidTank.onContentsChanged();
             return;
         }
         this.lockedFluid = null;
-        fluidTank.onContentsChangedInternal();
+        fluidTank.onContentsChanged();
     }
 
     private class HatchFluidTank extends NotifiableFluidTank {
@@ -352,8 +352,9 @@ public class MetaTileEntityFluidHatch extends MetaTileEntityMultiblockNotifiable
             return !locked || lockedFluid == null || fluid.isFluidEqual(lockedFluid);
         }
 
-        public void onContentsChangedInternal() {
-            this.onContentsChanged();
+        @Override
+        public void onContentsChanged() {
+            super.onContentsChanged();
         }
     }
 }
