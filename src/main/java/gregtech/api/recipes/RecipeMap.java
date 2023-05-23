@@ -6,8 +6,6 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.liquid.ILiquidStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
-import gnu.trove.map.TByteObjectMap;
-import gnu.trove.map.hash.TByteObjectHashMap;
 import gregtech.api.GTValues;
 import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.impl.FluidTankList;
@@ -29,6 +27,8 @@ import gregtech.api.util.*;
 import gregtech.common.ConfigHolder;
 import gregtech.integration.groovy.GroovyScriptCompat;
 import gregtech.integration.groovy.VirtualizedRecipeMap;
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -84,7 +84,7 @@ public class RecipeMap<R extends RecipeBuilder<R>> {
     private final boolean modifyItemOutputs;
     private final boolean modifyFluidInputs;
     private final boolean modifyFluidOutputs;
-    protected final TByteObjectMap<TextureArea> slotOverlays;
+    protected final Byte2ObjectMap<TextureArea> slotOverlays;
     protected TextureArea specialTexture;
     protected int[] specialTexturePosition;
     protected TextureArea progressBarTexture;
@@ -166,7 +166,7 @@ public class RecipeMap<R extends RecipeBuilder<R>> {
                      @Nonnull R defaultRecipeBuilder,
                      boolean isHidden) {
         this.unlocalizedName = unlocalizedName;
-        this.slotOverlays = new TByteObjectHashMap<>();
+        this.slotOverlays = new Byte2ObjectOpenHashMap<>();
         this.progressBarTexture = GuiTextures.PROGRESS_BAR_ARROW;
         this.moveType = MoveType.HORIZONTAL;
 
