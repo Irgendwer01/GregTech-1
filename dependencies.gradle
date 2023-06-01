@@ -45,6 +45,7 @@ dependencies {
     compileOnlyApi "curse.maven:journeymap-32274:2916002" // Journeymap 5.7.1
     compileOnlyApi "curse.maven:voxelmap-225179:3029445" // VoxelMap 1.9.28
     compileOnlyApi "curse.maven:xaeros-263420:4516832" // Xaero's Minimap 23.4.1
+    compileOnlyApi "curse.maven:exnihilo-274456:2817545" // Ex Nihilo Creatio 0.4.7.2
 }
 
 minecraft {
