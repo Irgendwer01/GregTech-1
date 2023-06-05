@@ -149,5 +149,4 @@ public class ExNihiloModule extends IntegrationSubmodule {
             SIEVES[12] = MetaTileEntities.registerMetaTileEntity(4014, new MetaTileEntitySieve(new ResourceLocation(GTValues.MODID, "sieve.opv"), 13));
         }
     }
-
 }
