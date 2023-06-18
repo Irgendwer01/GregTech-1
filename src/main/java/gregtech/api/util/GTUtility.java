@@ -33,6 +33,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -356,15 +357,15 @@ public class GTUtility {
      * modifications in list will reflect on fluid handler and wise-versa
      */
     public static List<FluidStack> fluidHandlerToList(IMultipleTankHandler fluidInputs) {
-        List<IFluidTank> backedList = fluidInputs.getFluidTanks();
+        List<IMultipleTankHandler.MultiFluidTankEntry> backedList = fluidInputs.getFluidTanks();
         return new AbstractList<FluidStack>() {
             @Override
             public FluidStack set(int index, FluidStack element) {
-                IFluidTank fluidTank = backedList.get(index);
+                IFluidTank fluidTank = backedList.get(index).getDelegate();
                 FluidStack oldStack = fluidTank.getFluid();
-                if (!(fluidTank instanceof FluidTank))
-                    return oldStack;
-                ((FluidTank) backedList.get(index)).setFluid(element);
+                if (fluidTank instanceof FluidTank) {
+                    ((FluidTank) fluidTank).setFluid(element);
+                }
                 return oldStack;
             }
 
@@ -405,6 +406,8 @@ public class GTUtility {
 
     /**
      * @deprecated Ambiguous naming; use either {@link #copy(ItemStack)} or {@link #copyFirst(ItemStack...)}
+     *
+     * </p> This method was deprecated in 2.6 and will be removed in 2.8
      */
     @Deprecated
     @Nonnull
@@ -483,6 +486,8 @@ public class GTUtility {
 
     /**
      * @deprecated Use {@link #copy(int, ItemStack)}
+     *
+     * </p> This method was deprecated in 2.6 and will be removed in 2.8
      */
     @Deprecated
     @Nonnull
@@ -745,6 +750,8 @@ public class GTUtility {
      * @param stack the stack to retrieve from
      * @return all the sub-items of an ItemStack
      * @deprecated Use {@link #getAllSubItems(Item)}
+     *
+     * </p> This method was deprecated in 2.6 and will be removed in 2.8
      */
     @Nonnull
     @Deprecated
@@ -775,5 +782,16 @@ public class GTUtility {
         Set<ItemStack> set = new ObjectOpenCustomHashSet<>(ItemStackHashStrategy.comparingItemDamageCount());
         set.addAll(subItems);
         return set;
+    }
+
+    /**
+     * Create a new {@link ResourceLocation} with {@link GTValues#MODID} as the namespace and a specified path
+     *
+     * @param path the path in the location
+     * @return the new location
+     */
+    @Nonnull
+    public static ResourceLocation gregtechId(@Nonnull String path) {
+        return new ResourceLocation(GTValues.MODID, path);
     }
 }
