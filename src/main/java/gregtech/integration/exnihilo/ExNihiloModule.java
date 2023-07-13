@@ -2,13 +2,13 @@ package gregtech.integration.exnihilo;
 
 import exnihilocreatio.registries.manager.ExNihiloRegistryManager;
 import gregtech.api.GTValues;
-import gregtech.api.GregTechAPI;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.resources.SteamTexture;
 import gregtech.api.gui.widgets.ProgressWidget;
 import gregtech.api.modules.GregTechModule;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.builders.SimpleRecipeBuilder;
+import gregtech.api.unification.material.event.MaterialEvent;
 import gregtech.api.unification.material.info.MaterialIconType;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.common.items.MetaItems;
@@ -42,12 +42,12 @@ import static gregtech.common.metatileentities.MetaTileEntities.*;
 
 
 @GregTechModule(
-        moduleID = GregTechModules.MODULE_EN,
-        containerID = GTValues.MODID,
-        modDependencies = GTValues.MODID_EN,
-        name = "GregTech ExNihiloCreatio integration",
-        descriptionKey = "gregtech.modules.en_integration.description"
-)
+				moduleID = GregTechModules.MODULE_EN,
+				containerID = GTValues.MODID,
+				modDependencies = GTValues.MODID_EN,
+				name = "GregTech ExNihiloCreatio integration",
+				descriptionKey = "gregtech.modules.en_integration.description"
+				)
 public class ExNihiloModule extends IntegrationSubmodule {
 
 
@@ -108,7 +108,7 @@ public class ExNihiloModule extends IntegrationSubmodule {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void registerMaterials(GregTechAPI.MaterialEvent event) {
+    public static void registerMaterials(MaterialEvent event) {
         oreChunkIcon = new MaterialIconType("oreChunk");
         oreEnderChunkIcon = new MaterialIconType("oreEnderChunk");
         oreNetherChunkIcon = new MaterialIconType("oreNetherChunk");
