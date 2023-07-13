@@ -2,6 +2,7 @@ package gregtech.integration.exnihilo;
 
 import exnihilocreatio.registries.manager.ExNihiloRegistryManager;
 import gregtech.api.GTValues;
+import gregtech.api.GregTechAPI;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.resources.SteamTexture;
 import gregtech.api.gui.widgets.ProgressWidget;
