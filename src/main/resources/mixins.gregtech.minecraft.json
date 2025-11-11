@@ -13,7 +13,8 @@
     "BlockRenderLayerMixin",
     "DamageSourceMixin",
     "EnchantmentCanApplyMixin",
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "RecipeRepairItemMixin"
   ],
   "client": [
     "BlockMixin",
