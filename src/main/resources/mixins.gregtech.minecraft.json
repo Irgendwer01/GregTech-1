@@ -9,8 +9,8 @@
   },
   "mixins": [
     "BlockConcretePowderMixin",
-    "ContainerMixin",
     "BlockRenderLayerMixin",
+    "ContainerMixin",
     "DamageSourceMixin",
     "EnchantmentCanApplyMixin",
     "MinecraftMixin",
@@ -21,7 +21,6 @@
     "EntityRendererMixin",
     "LayerArmorBaseMixin",
     "LayerCustomHeadMixin",
-    "RecipeRepairItemMixin",
     "RegionRenderCacheBuilderMixin",
     "RenderChunkMixin",
     "RenderGlobalMixin",
